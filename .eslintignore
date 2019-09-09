@@ -1,0 +1,13 @@
+coverage
+node_modules
+public
+dist
+other
+/node_modules
+/.github/actions/*/node_modules
+
+.cache
+
+coverage
+cypress/videos
+cypress/screenshots
