@@ -153,7 +153,7 @@ export default class Sketch {
     this.instanceGeo.attributes.normal = this.geometry.attributes.normal;
     this.instanceGeo.index = this.geometry.index;
 
-    const amountOfVerticies = 4;
+    const amountOfVerticies = 6;
 
     const dots = [];
     for (let k = 0; k < 10; k++) {
@@ -164,21 +164,6 @@ export default class Sketch {
     const progresses = [];
     const sizes = [];
     for (let i = 0; i < amountOfVerticies; i++) {
-      for (let j = i + 1; j < amountOfVerticies; j++) {
-        drawLine({
-          numberOfPoints: 800,
-          x1: dots[i][0],
-          y1: dots[i][1],
-          x2: dots[j][0],
-          y2: dots[j][1],
-          instancesOfPoints,
-          progresses,
-          sizes,
-        });
-      }
-    }
-
-    for (let i = 0; i < amountOfVerticies; i++) {
       for (let j = i + 1; j <= amountOfVerticies; j++) {
         drawVertex({
           x: dots[i][0],
@@ -187,7 +172,23 @@ export default class Sketch {
           progresses,
           sizes,
         });
+        if (j !== amountOfVerticies) {
+          drawLine({
+            numberOfPoints: 800,
+            x1: dots[i][0],
+            y1: dots[i][1],
+            x2: dots[j][0],
+            y2: dots[j][1],
+            instancesOfPoints,
+            progresses,
+            sizes,
+          });
+        }
       }
+    }
+
+    for (let i = 0; i < amountOfVerticies; i++) {
+      for (let j = i + 1; j <= amountOfVerticies; j++) {}
     }
 
     this.instanceGeo.addAttribute(
