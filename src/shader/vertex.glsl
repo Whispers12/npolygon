@@ -1,7 +1,9 @@
 uniform float time;
 
 varying vec2 vUv;
-attribute vec3 instancePosition;
+attribute vec2 instancePosition;
+attribute float progress;
+attribute float size;
 attribute vec3 instanceColor;
 attribute float instanceOffset;
 
@@ -88,25 +90,27 @@ void main(){
   vOffset=instanceOffset;
   float coef=1.;
   
-  float multiplicator1=time-coef*instancePosition[2];
+  float normalizeCoef=10.;
+  
+  float multiplicator1=time-coef*progress;
   float arg1=2.*M_PI*multiplicator1;
   
-  float dx1=cnoise(vec3(sin(arg1),cos(arg1),.3))/20.;
-  float dy1=cnoise(vec3(sin(arg1),cos(arg1),.7))/20.;
+  float dx1=cnoise(vec3(sin(arg1),cos(arg1),.3))/normalizeCoef;
+  float dy1=cnoise(vec3(sin(arg1),cos(arg1),.7))/normalizeCoef;
   
-  float multiplicator2=time-coef*(1.-instancePosition[2]);
+  float multiplicator2=time-coef*(1.-progress);
   float arg2=2.*M_PI*multiplicator2;
   
-  float dx2=cnoise(vec3(sin(arg2),cos(arg2),.3))/20.;
-  float dy2=cnoise(vec3(sin(arg2),cos(arg2),.7))/20.;
+  float dx2=cnoise(vec3(sin(arg2),cos(arg2),.3))/normalizeCoef;
+  float dy2=cnoise(vec3(sin(arg2),cos(arg2),.7))/normalizeCoef;
   
-  float dx=mix(dx1,dx2,instancePosition[2]);
-  float dy=mix(dy1,dy2,instancePosition[2]);
+  float dx=mix(dx1,dx2,progress);
+  float dy=mix(dy1,dy2,progress);
   
   // vec3 newposition=instancePosition+vec3(instancePosition[0],instancePosition[1],.0)+;
-  vec3 newposition=vec3(instancePosition[0],instancePosition[1],0.)+vec3(dx,dy,.0);
+  vec3 newposition=vec3(instancePosition.x,instancePosition.y,0.)+vec3(dx,dy,.0);
   
-  gl_PointSize=5.;
+  gl_PointSize=size;
   gl_Position=projectionMatrix*modelViewMatrix*vec4(newposition,1.);
 }
 

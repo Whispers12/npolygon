@@ -5,26 +5,30 @@ import * as dat from 'dat.gui';
 import fragment from './shader/fragment.glsl';
 import vertex from './shader/vertex.glsl';
 
-// import * as BAS from 'three-bas';
-
 const OrbitControls = require('three-orbit-controls')(THREE);
 
 function lerp(value1, value2, progress) {
   return value1 * (1 - progress) + value2 * progress;
 }
 
-function drawLine({ numberOfPoints, x1, y1, x2, y2, instancesOfPoints }) {
+function drawLine({ numberOfPoints, x1, y1, x2, y2, instancesOfPoints, progresses, sizes }) {
+  instancesOfPoints.push(x1, y1);
+
+  progresses.push(1);
+  sizes.push(4);
   for (let i = 0; i < numberOfPoints; i++) {
     const prog = i / numberOfPoints;
 
     const xx = lerp(x1, x2, prog);
     const yy = lerp(y1, y2, prog);
 
-    instancesOfPoints.push(xx, yy, prog);
+    instancesOfPoints.push(xx, yy);
+    progresses.push(prog);
+    sizes.push(1);
   }
 }
 
-function paintDot({ center, k, amountOfVerticies }) {
+function paintDot({ k, amountOfVerticies }) {
   return [
     1 / 2 + Math.sin((2 * Math.PI * k) / amountOfVerticies),
     1 / 2 + Math.cos((2 * Math.PI * k) / amountOfVerticies),
@@ -136,8 +140,6 @@ export default class Sketch {
       fragmentShader: fragment,
     });
 
-    // this.material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-
     this.geometry = new THREE.PlaneGeometry(10, 1, 1, 1);
 
     this.geometry = new THREE.CylinderBufferGeometry(2, 2, 1, 4, 1, true);
@@ -151,42 +153,39 @@ export default class Sketch {
     this.instanceGeo.attributes.normal = this.geometry.attributes.normal;
     this.instanceGeo.index = this.geometry.index;
 
-    const instances = 10;
-
-    const instancePositions = [];
-
-    for (let i = 0; i < instances; i++) {
-      instancePositions.push(i, i, 0);
-    }
-
     const amountOfVerticies = 10;
 
     const dots = [];
     for (let k = 0; k < 10; k++) {
-      dots.push(paintDot({ center: 1, k, amountOfVerticies }));
+      dots.push(paintDot({ k, amountOfVerticies }));
     }
 
-    console.log(dots);
     const instancesOfPoints = [];
+    const progresses = [];
+    const sizes = [];
     for (let i = 0; i < amountOfVerticies; i++) {
       for (let j = i + 1; j < amountOfVerticies; j++) {
         drawLine({
-          numberOfPoints: 400,
+          numberOfPoints: 500,
           x1: dots[i][0],
           y1: dots[i][1],
           x2: dots[j][0],
           y2: dots[j][1],
           instancesOfPoints,
+          progresses,
+          sizes,
         });
       }
     }
 
-    console.log(instancesOfPoints);
-
     this.instanceGeo.addAttribute(
       'instancePosition',
-      new THREE.InstancedBufferAttribute(new Float32Array(instancesOfPoints), 3),
+      new THREE.InstancedBufferAttribute(new Float32Array(instancesOfPoints), 4),
     );
+
+    this.instanceGeo.addAttribute('progress', new THREE.InstancedBufferAttribute(new Float32Array(progresses), 1));
+
+    this.instanceGeo.addAttribute('size', new THREE.InstancedBufferAttribute(new Float32Array(sizes), 1));
 
     const particles = new THREE.Points(this.instanceGeo, this.material);
     this.scene.add(particles);
