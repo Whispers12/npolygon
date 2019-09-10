@@ -90,19 +90,19 @@ void main(){
   vOffset=instanceOffset;
   float coef=1.;
   
-  float normalizeCoef=10.;
+  float normalizeCoef=20.;
   
   float multiplicator1=time-coef*progress;
   float arg1=2.*M_PI*multiplicator1;
   
-  float dx1=cnoise(vec3(sin(arg1),cos(arg1),.3))/normalizeCoef;
-  float dy1=cnoise(vec3(sin(arg1),cos(arg1),.7))/normalizeCoef;
+  float dx1=cnoise(vec3(sin(arg1),cos(arg1),.1))/normalizeCoef;
+  float dy1=cnoise(vec3(sin(arg1),cos(arg1),.9))/normalizeCoef;
   
   float multiplicator2=time-coef*(1.-progress);
   float arg2=2.*M_PI*multiplicator2;
   
-  float dx2=cnoise(vec3(sin(arg2),cos(arg2),.3))/normalizeCoef;
-  float dy2=cnoise(vec3(sin(arg2),cos(arg2),.7))/normalizeCoef;
+  float dx2=cnoise(vec3(sin(arg2),cos(arg2),.1))/normalizeCoef;
+  float dy2=cnoise(vec3(sin(arg2),cos(arg2),.9))/normalizeCoef;
   
   float dx=mix(dx1,dx2,progress);
   float dy=mix(dy1,dy2,progress);
